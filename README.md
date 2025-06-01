@@ -21,49 +21,6 @@ Convert your Figma designs into production-ready code using AI! This plugin leve
 - **One-Click Copy**: Easy code copying with visual feedback
 - **Real-time Selection**: Automatically detects component selection changes
 
-## 🔧 Setup & Installation
-
-### Prerequisites
-- Node.js (v14 or higher)
-- npm or yarn
-- Figma Desktop App
-- Google Gemini API Key
-
-### Quick Start
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/SomeshSampat2/Figma-Design-To-Code.git
-   cd Figma-Design-To-Code
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Setup API Key (Secure)**
-   ```bash
-   npm run setup
-   # Edit the .env file with your actual Gemini API key
-   ```
-
-4. **Build the plugin**
-   ```bash
-   npm run build
-   ```
-
-5. **Install in Figma**
-   - Open Figma Desktop App
-   - Go to Plugins → Development → Import plugin from manifest
-   - Select the `manifest.json` file from this project
-   - Run the plugin!
-
-### 🔒 Security Features
-- **No hardcoded API keys** - Uses environment variables only
-- **Automatic cleanup** - Build process restores placeholders after injection
-- **Clean script** - `npm run clean` removes any injected keys from source code
-- **Git-safe** - Only placeholders are committed to repository
-
 ## 🚀 Quick Setup for Developers
 
 ### 1. Clone and Install Dependencies
