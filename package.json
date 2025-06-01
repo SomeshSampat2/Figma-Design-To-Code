@@ -1,0 +1,47 @@
+{
+  "name": "Figma-To-Code",
+  "version": "1.0.0",
+  "description": "Convert Figma designs to code using AI - No setup required for users!",
+  "main": "code.js",
+  "scripts": {
+    "build": "node build-config.js && tsc -p tsconfig.json",
+    "watch": "node build-config.js && tsc -p tsconfig.json --watch",
+    "lint": "eslint --ext .ts,.tsx --ignore-pattern node_modules .",
+    "lint:fix": "eslint --ext .ts,.tsx --ignore-pattern node_modules --fix .",
+    "dev": "npm run build && echo '🚀 Plugin built! Install in Figma Development mode.'",
+    "setup": "echo '📋 Setting up API key...' && cp env.example .env && echo '✅ Created .env file. Please edit it with your API key and run npm run build'"
+  },
+  "author": "",
+  "license": "",
+  "devDependencies": {
+    "@figma/eslint-plugin-figma-plugins": "*",
+    "@figma/plugin-typings": "*",
+    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/parser": "^6.12.0",
+    "dotenv": "^16.4.7",
+    "eslint": "^8.54.0",
+    "typescript": "^5.3.2"
+  },
+  "eslintConfig": {
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:@figma/figma-plugins/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "project": "./tsconfig.json"
+    },
+    "root": true,
+    "rules": {
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          "argsIgnorePattern": "^_",
+          "varsIgnorePattern": "^_",
+          "caughtErrorsIgnorePattern": "^_"
+        }
+      ]
+    }
+  }
+}

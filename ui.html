@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Figma to Code</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #8b5cf6;
+      --accent: #06b6d4;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --bg-primary: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+      --bg-card: rgba(15, 23, 42, 0.7);
+      --bg-card-hover: rgba(30, 41, 59, 0.8);
+      --border: rgba(148, 163, 184, 0.2);
+      --border-hover: rgba(148, 163, 184, 0.4);
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      --backdrop-blur: blur(20px);
+      --radius: 16px;
+      --radius-sm: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    .container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: var(--backdrop-blur);
+      -webkit-backdrop-filter: var(--backdrop-blur);
+    }
+
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary) transparent;
+    }
+
+    .scroll-area::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .scroll-area::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .scroll-area::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 3px;
+    }
+
+    .scroll-area::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-dark);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+      padding: 24px;
+      background: var(--bg-card);
+      backdrop-filter: var(--backdrop-blur);
+      -webkit-backdrop-filter: var(--backdrop-blur);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      color: var(--text-secondary);
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: var(--backdrop-blur);
+      -webkit-backdrop-filter: var(--backdrop-blur);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-md);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+
+    .card-title {
+      font-weight: 600;
+      margin-bottom: 16px;
+      font-size: 18px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .format-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .format-button {
+      padding: 16px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: var(--backdrop-blur);
+      -webkit-backdrop-filter: var(--backdrop-blur);
+    }
+
+    .format-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .format-button:hover {
+      border-color: var(--primary);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .format-button:hover::before {
+      opacity: 0.1;
+    }
+
+    .format-button.selected {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border-color: var(--primary);
+      box-shadow: var(--shadow-xl);
+      transform: translateY(-4px);
+    }
+
+    .format-button.selected::before {
+      opacity: 0;
+    }
+
+    .format-icon {
+      font-size: 24px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+
+    .format-text {
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: 0.025em;
+    }
+
+    .selection-status {
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      backdrop-filter: var(--backdrop-blur);
+      -webkit-backdrop-filter: var(--backdrop-blur);
+      transition: all 0.3s ease;
+    }
+
+    .selection-status.has-selection {
+      color: var(--success);
+      background: rgba(16, 185, 129, 0.1);
+      border-color: var(--success);
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+    }
+
+    .status-message {
+      padding: 16px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      margin-bottom: 16px;
+      display: none;
+      backdrop-filter: var(--backdrop-blur);
+      -webkit-backdrop-filter: var(--backdrop-blur);
+      font-weight: 500;
+    }
+
+    .status-message.error {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--error);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      display: block;
+    }
+
+    .status-message.success {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      display: block;
+    }
+
+    .status-message.warning {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      display: block;
+    }
+
+    .generate-button {
+      width: 100%;
+      padding: 16px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      letter-spacing: 0.025em;
+    }
+
+    .generate-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.6s;
+    }
+
+    .generate-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .generate-button:hover:not(:disabled)::before {
+      left: 100%;
+    }
+
+    .generate-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 32px;
+      color: var(--text-secondary);
+    }
+
+    .loading.visible {
+      display: block;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border: 3px solid rgba(99, 102, 241, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 12px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .code-output {
+      display: none;
+      flex-direction: column;
+      margin-bottom: 24px;
+    }
+
+    .code-output.visible {
+      display: flex;
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: between;
+      align-items: center;
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      backdrop-filter: var(--backdrop-blur);
+      -webkit-backdrop-filter: var(--backdrop-blur);
+    }
+
+    .code-title {
+      font-weight: 600;
+      font-size: 16px;
+      color: var(--text-primary);
+      flex: 1;
+    }
+
+    .copy-button {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, var(--accent), var(--success));
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      letter-spacing: 0.025em;
+    }
+
+    .copy-button:hover {
+      transform: scale(1.05);
+      box-shadow: var(--shadow-md);
+    }
+
+    .code-container {
+      position: relative;
+      max-height: 400px;
+      overflow-y: auto;
+      background: #1a1a1a;
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary) #1a1a1a;
+    }
+
+    .code-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .code-container::-webkit-scrollbar-track {
+      background: #1a1a1a;
+    }
+
+    .code-container::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 4px;
+    }
+
+    .code-content {
+      padding: 20px;
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #f8f8f2;
+      background: transparent;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border: none;
+      outline: none;
+      resize: none;
+    }
+
+    .powered-by {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 16px;
+      background: var(--bg-card);
+      backdrop-filter: var(--backdrop-blur);
+      -webkit-backdrop-filter: var(--backdrop-blur);
+      border-top: 1px solid var(--border);
+      margin-top: auto;
+    }
+
+    /* Syntax highlighting for different languages */
+    .code-content.language-kotlin { color: #A97BFF; }
+    .code-content.language-xml { color: #FF6B6B; }
+    .code-content.language-swift { color: #FF9500; }
+    .code-content.language-javascript { color: #F7DF1E; }
+    .code-content.language-dart { color: #00D2B8; }
+    .code-content.language-html { color: #E34F26; }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card {
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    .format-button {
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    /* Responsive design */
+    @media (max-width: 400px) {
+      .format-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .header h1 {
+        font-size: 24px;
+      }
+      
+      .scroll-area {
+        padding: 16px;
+      }
+    }
+
+    /* Custom gradient overlays */
+    .gradient-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(600px circle at 20% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+        radial-gradient(800px circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(400px circle at 40% 40%, rgba(6, 182, 212, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+  <div class="gradient-overlay"></div>
+  
+  <div class="container">
+    <div class="scroll-area">
+      <div class="header">
+        <h1>✨ Figma to Code</h1>
+        <p>AI-powered design to code conversion</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          📱 Choose Your Framework
+        </div>
+        <div class="format-grid">
+          <div class="format-button" data-format="jetpack-compose">
+            <div class="format-icon">🤖</div>
+            <div class="format-text">Jetpack Compose</div>
+          </div>
+          <div class="format-button" data-format="xml">
+            <div class="format-icon">📄</div>
+            <div class="format-text">Android XML</div>
+          </div>
+          <div class="format-button" data-format="swiftui">
+            <div class="format-icon">🍎</div>
+            <div class="format-text">SwiftUI</div>
+          </div>
+          <div class="format-button" data-format="react-native">
+            <div class="format-icon">⚛️</div>
+            <div class="format-text">React Native</div>
+          </div>
+          <div class="format-button" data-format="flutter">
+            <div class="format-icon">🐦</div>
+            <div class="format-text">Flutter</div>
+          </div>
+          <div class="format-button" data-format="html-css">
+            <div class="format-icon">🌐</div>
+            <div class="format-text">HTML/CSS</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="selection-status" id="selectionInfo">
+        🎯 Select a component in Figma to get started
+      </div>
+
+      <div class="status-message" id="statusMessage"></div>
+
+      <button class="generate-button" id="generateButton" disabled>
+        🚀 Generate Code with AI
+      </button>
+
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div>Generating beautiful code with AI...</div>
+      </div>
+
+      <div class="code-output" id="codeOutput">
+        <div class="code-header">
+          <div class="code-title" id="codeTitle">Generated Code</div>
+          <button class="copy-button" id="copyButton">📋 Copy Code</button>
+        </div>
+        <div class="code-container">
+          <pre class="code-content" id="codeContent"></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="powered-by">
+      Powered by Google Gemini AI ✨
+    </div>
+  </div>
+
+  <script>
+    // API key will be injected here during build process
+    const GEMINI_API_KEY = 'AIzaSyAIyv8djrcutOa9rKhJ1AeU5lJOuhs9PFA';
+    
+    let selectedFormat = null;
+    let currentNodeData = null;
+    let hasSelection = false;
+
+    // DOM elements
+    const formatButtons = document.querySelectorAll('.format-button');
+    const generateButton = document.getElementById('generateButton');
+    const statusMessage = document.getElementById('statusMessage');
+    const selectionInfo = document.getElementById('selectionInfo');
+    const loading = document.getElementById('loading');
+    const codeOutput = document.getElementById('codeOutput');
+    const codeContent = document.getElementById('codeContent');
+    const codeTitle = document.getElementById('codeTitle');
+    const copyButton = document.getElementById('copyButton');
+
+    // Language mapping for syntax highlighting
+    const languageMap = {
+      'jetpack-compose': 'kotlin',
+      'xml': 'xml',
+      'swiftui': 'swift',
+      'react-native': 'javascript',
+      'flutter': 'dart',
+      'html-css': 'html'
+    };
+
+    // Initialize
+    formatButtons.forEach((button, index) => {
+      button.style.animationDelay = `${index * 0.1}s`;
+      button.addEventListener('click', () => {
+        formatButtons.forEach(b => b.classList.remove('selected'));
+        button.classList.add('selected');
+        selectedFormat = button.dataset.format;
+        updateGenerateButton();
+      });
+    });
+
+    generateButton.addEventListener('click', generateCode);
+    copyButton.addEventListener('click', copyCode);
+
+    // Message handling
+    onmessage = (event) => {
+      const message = event.data.pluginMessage;
+      
+      switch (message.type) {
+        case 'selection-changed':
+          hasSelection = message.hasSelection;
+          updateSelectionInfo();
+          updateGenerateButton();
+          break;
+          
+        case 'selection-success':
+          currentNodeData = message.nodeData;
+          showStatus('✅ Component selected successfully!', 'success');
+          updateSelectionInfo();
+          break;
+          
+        case 'selection-error':
+          showStatus(`❌ ${message.message}`, 'error');
+          currentNodeData = null;
+          updateSelectionInfo();
+          break;
+          
+        case 'process-generation':
+          processGeneration(message.nodeData, message.format, GEMINI_API_KEY);
+          break;
+          
+        case 'generation-error':
+          hideLoading();
+          showStatus(`❌ ${message.message}`, 'error');
+          break;
+      }
+    };
+
+    function updateSelectionInfo() {
+      if (hasSelection && currentNodeData) {
+        selectionInfo.innerHTML = `✅ <strong>${currentNodeData.name}</strong> (${currentNodeData.type}) - Ready to generate!`;
+        selectionInfo.classList.add('has-selection');
+      } else if (hasSelection) {
+        selectionInfo.innerHTML = '🎯 Component selected - choose a format and generate!';
+        selectionInfo.classList.add('has-selection');
+      } else {
+        selectionInfo.innerHTML = '🎯 Select a component in Figma to get started';
+        selectionInfo.classList.remove('has-selection');
+      }
+    }
+
+    function updateGenerateButton() {
+      const canGenerate = hasSelection && selectedFormat;
+      generateButton.disabled = !canGenerate;
+      
+      if (canGenerate) {
+        const formatName = selectedFormat.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+        generateButton.innerHTML = `🚀 Generate ${formatName} Code`;
+      } else {
+        generateButton.innerHTML = '🚀 Generate Code with AI';
+      }
+    }
+
+    function generateCode() {
+      if (!selectedFormat) {
+        showStatus('⚠️ Please select an output format first', 'warning');
+        return;
+      }
+
+      if (!hasSelection) {
+        showStatus('⚠️ Please select a component in Figma first', 'warning');
+        return;
+      }
+
+      showLoading();
+      hideStatus();
+      hideCodeOutput();
+      
+      parent.postMessage({
+        pluginMessage: {
+          type: 'generate-code',
+          format: selectedFormat,
+          apiKey: GEMINI_API_KEY
+        }
+      }, '*');
+    }
+
+    async function processGeneration(nodeData, format, apiKey) {
+      try {
+        if (!apiKey || apiKey === 'YOUR_GEMINI_API_KEY_HERE') {
+          throw new Error('API key not configured. Please run "npm run setup" and add your API key to .env file.');
+        }
+        
+        const prompt = createPrompt(nodeData, format);
+        const generatedCode = await callGeminiAPI(prompt, apiKey);
+        
+        hideLoading();
+        showCodeOutput(generatedCode, format);
+        showStatus('🎉 Code generated successfully!', 'success');
+      } catch (error) {
+        hideLoading();
+        showStatus(`❌ Generation failed: ${error.message}`, 'error');
+      }
+    }
+
+    function createPrompt(nodeData, format) {
+      const formatInstructions = {
+        'jetpack-compose': 'Generate ONLY Jetpack Compose code for Android. Use proper Material Design 3 components, follow Android UI guidelines, include proper state management, and handle all layout properties accurately.',
+        'xml': 'Generate ONLY Android XML layout code. Use proper Material Design components, ViewGroups, follow Android layout best practices, and include all styling attributes.',
+        'swiftui': 'Generate ONLY SwiftUI code for iOS. Use proper Apple design guidelines, SwiftUI best practices, native iOS components, and accurate layout modifiers.',
+        'react-native': 'Generate ONLY React Native code. Use proper React Native components, accurate styling with StyleSheet, follow React patterns, and handle all layout properties.',
+        'flutter': 'Generate ONLY Flutter/Dart code. Use proper Material Design widgets, Flutter best practices, responsive design, and accurate layout properties.',
+        'html-css': 'Generate ONLY semantic HTML with comprehensive CSS. Use modern CSS features (flexbox/grid), CSS custom properties, proper responsive design, and follow web standards.'
+      };
+
+      // Helper function to describe layout properties
+      function describeLayout(layout) {
+        if (!layout) return '';
+        
+        let layoutDesc = `\n- Layout Mode: ${layout.mode}`;
+        if (layout.mode === 'HORIZONTAL' || layout.mode === 'VERTICAL') {
+          layoutDesc += `\n- Direction: ${layout.mode}`;
+          layoutDesc += `\n- Alignment: ${layout.align || 'default'}`;
+          layoutDesc += `\n- Justification: ${layout.justify || 'default'}`;
+          layoutDesc += `\n- Item Spacing: ${layout.spacing || 0}px`;
+          layoutDesc += `\n- Padding: top ${layout.padding.top}px, right ${layout.padding.right}px, bottom ${layout.padding.bottom}px, left ${layout.padding.left}px`;
+        }
+        return layoutDesc;
+      }
+
+      // Helper function to describe fills
+      function describeFills(fills) {
+        if (!fills || fills.length === 0) return '';
+        
+        return fills.map(fill => {
+          if (fill.type === 'SOLID') {
+            const color = fill.color;
+            return `Solid color: rgba(${Math.round(color.r * 255)}, ${Math.round(color.g * 255)}, ${Math.round(color.b * 255)}, ${fill.opacity})`;
+          } else if (fill.type === 'GRADIENT_LINEAR') {
+            return `Linear gradient with ${fill.gradientStops.length} stops`;
+          } else if (fill.type === 'GRADIENT_RADIAL') {
+            return `Radial gradient with ${fill.gradientStops.length} stops`;
+          }
+          return `Fill type: ${fill.type}`;
+        }).join(', ');
+      }
+
+      // Helper function to describe text properties
+      function describeText(text) {
+        if (!text) return '';
+        
+        let textDesc = `\n- Text Content: "${text.characters}"`;
+        textDesc += `\n- Font Family: ${text.fontName?.family || 'default'}`;
+        textDesc += `\n- Font Style: ${text.fontName?.style || 'regular'}`;
+        textDesc += `\n- Font Size: ${text.fontSize}px`;
+        textDesc += `\n- Text Align: ${text.textAlignHorizontal}`;
+        textDesc += `\n- Line Height: ${JSON.stringify(text.lineHeight)}`;
+        textDesc += `\n- Letter Spacing: ${JSON.stringify(text.letterSpacing)}`;
+        
+        if (text.textCase && text.textCase !== 'ORIGINAL') {
+          textDesc += `\n- Text Case: ${text.textCase}`;
+        }
+        if (text.textDecoration && text.textDecoration !== 'NONE') {
+          textDesc += `\n- Text Decoration: ${text.textDecoration}`;
+        }
+        
+        return textDesc;
+      }
+
+      // Helper function to describe effects (shadows, etc.)
+      function describeEffects(effects) {
+        if (!effects || effects.length === 0) return '';
+        
+        return effects.map(effect => {
+          if (effect.type === 'DROP_SHADOW') {
+            return `Drop shadow: offset(${effect.offset?.x || 0}, ${effect.offset?.y || 0}), radius ${effect.radius || 0}px, spread ${effect.spread || 0}px`;
+          } else if (effect.type === 'INNER_SHADOW') {
+            return `Inner shadow: offset(${effect.offset?.x || 0}, ${effect.offset?.y || 0}), radius ${effect.radius || 0}px`;
+          } else if (effect.type === 'LAYER_BLUR') {
+            return `Layer blur: radius ${effect.radius || 0}px`;
+          }
+          return `Effect: ${effect.type}`;
+        }).join(', ');
+      }
+
+      // Recursive function to describe component hierarchy
+      function describeNode(node, depth = 0) {
+        const indent = '  '.repeat(depth);
+        let description = `${indent}• ${node.name} (${node.type})`;
+        
+        // Add dimensions
+        if (node.width && node.height) {
+          description += `\n${indent}  - Size: ${Math.round(node.width)}×${Math.round(node.height)}px`;
+        }
+        
+        // Add position
+        if (node.x !== undefined && node.y !== undefined) {
+          description += `\n${indent}  - Position: (${Math.round(node.x)}, ${Math.round(node.y)})`;
+        }
+        
+        // Add layout information
+        if (node.layout) {
+          description += describeLayout(node.layout).split('\n').map(line => `${indent}  ${line}`).join('\n');
+        }
+        
+        // Add fills
+        if (node.fills) {
+          const fillsDesc = describeFills(node.fills);
+          if (fillsDesc) {
+            description += `\n${indent}  - Background: ${fillsDesc}`;
+          }
+        }
+        
+        // Add strokes
+        if (node.strokes && node.strokes.length > 0) {
+          description += `\n${indent}  - Border: ${node.strokeWeight || 1}px`;
+        }
+        
+        // Add corner radius
+        if (node.cornerRadius) {
+          description += `\n${indent}  - Corner Radius: ${node.cornerRadius}px`;
+        }
+        
+        // Add border radius details
+        if (node.borderRadius) {
+          const br = node.borderRadius;
+          description += `\n${indent}  - Border Radius: ${br.topLeft}px ${br.topRight}px ${br.bottomRight}px ${br.bottomLeft}px`;
+        }
+        
+        // Add opacity
+        if (node.opacity !== undefined && node.opacity !== 1) {
+          description += `\n${indent}  - Opacity: ${node.opacity}`;
+        }
+        
+        // Add effects
+        if (node.effects) {
+          const effectsDesc = describeEffects(node.effects);
+          if (effectsDesc) {
+            description += `\n${indent}  - Effects: ${effectsDesc}`;
+          }
+        }
+        
+        // Add text properties
+        if (node.text) {
+          description += describeText(node.text).split('\n').map(line => `${indent}  ${line}`).join('\n');
+        }
+        
+        // Add constraints
+        if (node.constraints) {
+          description += `\n${indent}  - Constraints: H(${node.constraints.horizontal}) V(${node.constraints.vertical})`;
+        }
+        
+        // Add children
+        if (node.children && node.children.length > 0) {
+          description += `\n${indent}  - Children (${node.children.length}):`;
+          for (const child of node.children) {
+            description += '\n' + describeNode(child, depth + 2);
+          }
+        }
+        
+        return description;
+      }
+
+      const componentDescription = describeNode(nodeData);
+
+      return `You are an expert UI developer. Convert this Figma design component to ${format} code.
+
+COMPONENT ANALYSIS:
+${componentDescription}
+
+REQUIREMENTS for ${format}:
+${formatInstructions[format]}
+
+CRITICAL INSTRUCTIONS:
+1. Return ONLY the code - no explanations, no comments outside the code, no markdown formatting
+2. Recreate the EXACT visual appearance with precise measurements
+3. Include ALL layout properties (padding, margins, spacing, alignment)
+4. Match ALL colors, fonts, and styling exactly
+5. Preserve the complete component hierarchy and nesting
+6. Include proper responsive behavior and constraints
+7. Use production-ready, optimized code
+8. Handle all text formatting and typography accurately
+9. Implement all visual effects (shadows, borders, opacity)
+10. Ensure the code is scalable and maintainable
+
+OUTPUT FORMAT:
+- Return ONLY executable code
+- Include necessary imports at the top
+- Add inline comments within the code for clarity
+- NO explanatory text before or after the code
+- NO markdown code blocks or formatting
+
+Generate the complete, runnable code:`;
+    }
+
+    async function callGeminiAPI(prompt, apiKey) {
+      const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=' + apiKey, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: prompt
+            }]
+          }],
+          generationConfig: {
+            temperature: 0.1
+          }
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      
+      if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+        throw new Error('Invalid response from Gemini API');
+      }
+
+      const rawResponse = data.candidates[0].content.parts[0].text;
+      return cleanCodeResponse(rawResponse);
+    }
+
+    function cleanCodeResponse(response) {
+      // Remove any markdown code block formatting
+      let cleaned = response.replace(/^```[\w-]*\n?/gm, '').replace(/\n?```$/gm, '');
+      
+      // Remove any explanatory text before the actual code
+      // Look for common patterns that indicate start of code
+      const codeStartPatterns = [
+        /^(import|from|@|<|\w+\s*\{|\/\/|\/\*|#|<!DOCTYPE)/m,  // Common code starters
+        /^(class|function|const|let|var|@Composable|struct)/m,   // More code starters
+        /^(<\w+|@Component|interface|enum)/m                     // HTML/Component starters
+      ];
+      
+      for (const pattern of codeStartPatterns) {
+        const match = cleaned.match(pattern);
+        if (match) {
+          const startIndex = cleaned.indexOf(match[0]);
+          cleaned = cleaned.substring(startIndex);
+          break;
+        }
+      }
+      
+      // Remove any trailing explanatory text after the code
+      // Look for common patterns that indicate end of code
+      const explanationPatterns = [
+        /\n\n(This code|The above|Explanation|Note:|Key features:|How to use:)/i,
+        /\n\n(To use this|Remember to|Make sure to|Don't forget)/i,
+        /\n\n\*\*/,  // Bold markdown
+        /\n\n#+/     // Headers
+      ];
+      
+      for (const pattern of explanationPatterns) {
+        const match = cleaned.match(pattern);
+        if (match) {
+          cleaned = cleaned.substring(0, match.index);
+          break;
+        }
+      }
+      
+      // Clean up extra whitespace
+      cleaned = cleaned.trim();
+      
+      return cleaned;
+    }
+
+    function showStatus(message, type) {
+      statusMessage.innerHTML = message;
+      statusMessage.className = `status-message ${type}`;
+      
+      // Auto-hide success messages after 3 seconds
+      if (type === 'success') {
+        setTimeout(hideStatus, 3000);
+      }
+    }
+
+    function hideStatus() {
+      statusMessage.className = 'status-message';
+    }
+
+    function showLoading() {
+      loading.classList.add('visible');
+    }
+
+    function hideLoading() {
+      loading.classList.remove('visible');
+    }
+
+    function showCodeOutput(code, format) {
+      // Apply syntax highlighting class
+      const language = languageMap[format] || 'text';
+      codeContent.className = `code-content language-${language}`;
+      codeContent.textContent = code;
+      
+      const formatName = format.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+      codeTitle.innerHTML = `✨ Generated ${formatName} Code`;
+      codeOutput.classList.add('visible');
+      
+      // Scroll to code output
+      codeOutput.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function hideCodeOutput() {
+      codeOutput.classList.remove('visible');
+    }
+
+    async function copyCode() {
+      try {
+        await navigator.clipboard.writeText(codeContent.textContent);
+        const originalText = copyButton.innerHTML;
+        copyButton.innerHTML = '✅ Copied!';
+        copyButton.style.background = 'linear-gradient(135deg, var(--success), var(--accent))';
+        
+        setTimeout(() => {
+          copyButton.innerHTML = originalText;
+          copyButton.style.background = 'linear-gradient(135deg, var(--accent), var(--success))';
+        }, 2000);
+        
+        showStatus('📋 Code copied to clipboard!', 'success');
+      } catch (error) {
+        showStatus('❌ Failed to copy code to clipboard', 'error');
+      }
+    }
+
+    // Add smooth scrolling for better UX
+    document.addEventListener('DOMContentLoaded', function() {
+      document.documentElement.style.scrollBehavior = 'smooth';
+    });
+
+    // Request initial selection state
+    parent.postMessage({
+      pluginMessage: { type: 'get-selection' }
+    }, '*');
+  </script>
+</body>
+</html> 
