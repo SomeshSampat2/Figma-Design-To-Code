@@ -20,14 +20,30 @@ if (!apiKey || apiKey === 'YOUR_GEMINI_API_KEY_HERE') {
 const uiTemplatePath = path.join(__dirname, 'ui.html');
 let uiContent = fs.readFileSync(uiTemplatePath, 'utf8');
 
-// Replace the API key placeholder in the UI file
-uiContent = uiContent.replace(
-  'const GEMINI_API_KEY = window.FIGMA_TO_CODE_CONFIG?.GEMINI_API_KEY;',
-  `const GEMINI_API_KEY = '${apiKey}';`
-);
+// Store original content with placeholder
+const originalPlaceholder = 'const GEMINI_API_KEY = \'PLACEHOLDER_API_KEY_TO_BE_REPLACED\';';
+const injectedKey = `const GEMINI_API_KEY = '${apiKey}';`;
 
-// Write the updated UI file
+// Replace the API key placeholder in the UI file
+uiContent = uiContent.replace(originalPlaceholder, injectedKey);
+
+// Write the updated UI file for build
 fs.writeFileSync(uiTemplatePath, uiContent);
 
 console.log('✅ API key injected directly into ui.html');
-console.log('🔒 API key loaded from environment variables'); 
+console.log('🔒 API key loaded from environment variables');
+
+// Add cleanup function for development
+process.on('exit', () => {
+  // Only restore placeholder if this is a dev build (not production)
+  if (process.env.NODE_ENV !== 'production') {
+    try {
+      let resetContent = fs.readFileSync(uiTemplatePath, 'utf8');
+      resetContent = resetContent.replace(injectedKey, originalPlaceholder);
+      fs.writeFileSync(uiTemplatePath, resetContent);
+      console.log('🧹 Placeholder restored in ui.html');
+    } catch (error) {
+      // Silently fail - not critical
+    }
+  }
+}); 

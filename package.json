@@ -9,6 +9,7 @@
     "lint": "eslint --ext .ts,.tsx --ignore-pattern node_modules .",
     "lint:fix": "eslint --ext .ts,.tsx --ignore-pattern node_modules --fix .",
     "dev": "npm run build && echo '🚀 Plugin built! Install in Figma Development mode.'",
+    "clean": "node -e \"const fs = require('fs'); const content = fs.readFileSync('ui.html', 'utf8').replace(/const GEMINI_API_KEY = '[^']*';/, \\\"const GEMINI_API_KEY = 'PLACEHOLDER_API_KEY_TO_BE_REPLACED';\\\"); fs.writeFileSync('ui.html', content); console.log('🧹 API key placeholder restored');\"",
     "setup": "echo '📋 Setting up API key...' && cp env.example .env && echo '✅ Created .env file. Please edit it with your API key and run npm run build'"
   },
   "author": "",
